@@ -37,7 +37,7 @@ fun SportOrganizerNavHost(
         }
 
         composable(Screen.Dashboard.route) {
-            SportOrganizerHome(onOpenProfile = { navController.navigate(Screen.Profile.route) })
+            SportOrganizerHome(onOpenProfile = { navController.navigateToTopLevel(Screen.Profile.route) })
         }
 
         composable(Screen.Teams.route) {
@@ -76,5 +76,20 @@ fun SportOrganizerNavHost(
                 }
             )
         }
+    }
+}
+
+/**
+ * Navigates to a bottom-bar destination exactly like tapping its tab does, so the
+ * back stack stays consistent no matter where the navigation was triggered from
+ * (bottom bar, or the profile logo on the Home screen).
+ */
+fun NavHostController.navigateToTopLevel(route: String) {
+    navigate(route) {
+        popUpTo(graph.startDestinationId) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
 }

@@ -57,6 +57,7 @@ import com.sportorganizer.app.ui.screens.DashboardScreen
 import com.sportorganizer.app.ui.theme.SportOrganizerTheme
 import com.sportorganizer.app.ui.theme.navigation.Screen
 import com.sportorganizer.app.ui.theme.navigation.SportOrganizerNavHost
+import com.sportorganizer.app.ui.theme.navigation.navigateToTopLevel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -198,22 +199,16 @@ private fun SportOrganizerMainApp(
                             ?.hierarchy
                             ?.any { it.route == screen.route } == true,
                         onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                            navController.navigateToTopLevel(screen.route)
                         },
                         icon = {
                             Text(
                                 text = when (screen) {
-                                    Screen.Dashboard -> "H"
-                                    Screen.Teams -> "T"
-                                    Screen.Matches -> "M"
-                                    Screen.Tournaments -> "C"
-                                    Screen.Profile -> "P"
+                                    Screen.Dashboard -> "🏠"
+                                    Screen.Teams -> "👥"
+                                    Screen.Matches -> "🏟"
+                                    Screen.Tournaments -> "🏆"
+                                    Screen.Profile -> "👤"
                                     Screen.CollegeOnboarding -> ""
                                     Screen.CollegeAdminRequests -> ""
                                     Screen.PlatformAdmin -> ""

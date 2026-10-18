@@ -17,3 +17,9 @@ This update refreshes the visual system while preserving the existing Supabase a
 4. Sync Gradle, then run **Build > Rebuild Project**.
 
 The dashboard overview counts are still placeholders (`—`) because live dashboard aggregates have not yet been wired to the database. The Supabase connection check remains in place.
+
+## Profile fix pass
+- Profile logo now uses the same navigation as the bottom bar (`navigateToTopLevel`), so Home works afterwards.
+- Profile screen uses one scroll container (removed nested LazyColumns that blocked scrolling).
+- Redesigned "My Profile" header, user ID card, quick actions, memberships/permissions and college list.
+- Bottom bar icons changed from letters to emoji.
