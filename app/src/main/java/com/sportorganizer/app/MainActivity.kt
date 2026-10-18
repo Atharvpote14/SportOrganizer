@@ -1,18 +1,20 @@
 
 package com.sportorganizer.app
 
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
-import com.sportorganizer.app.data.remote.repository.AuthRepository
-import android.os.Bundle
-import androidx.activity.ComponentActivity
+
+import com.sportorganizer.app.auth.AuthViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.jan.supabase.auth.auth
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -22,21 +24,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.sportorganizer.app.data.remote.repository.AuthRepository
+import com.sportorganizer.app.data.remote.supabase
 import com.sportorganizer.app.ui.screens.AuthScreen
 import com.sportorganizer.app.ui.screens.DashboardScreen
 import com.sportorganizer.app.ui.theme.SportOrganizerTheme
 import com.sportorganizer.app.ui.theme.navigation.Screen
 import com.sportorganizer.app.ui.theme.navigation.SportOrganizerNavHost
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,15 +61,24 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun SportOrganizerApp() {
+    val authViewModel: AuthViewModel = viewModel()
     var isAuthenticated by remember { mutableStateOf(false) }
     var isCheckingSession by remember { mutableStateOf(true) }
 
-    androidx.compose.runtime.LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         try {
-            isAuthenticated =
-                com.sportorganizer.app.data.remote.supabase.auth
-                    .currentSessionOrNull() != null
-        } catch (_: Exception) {
+            val auth = com.sportorganizer.app.data.remote.supabase.auth
+
+            // Explicitly load the saved session before checking it.
+            auth.loadFromStorage()
+
+            isAuthenticated = auth.currentSessionOrNull() != null
+        } catch (e: Exception) {
+            android.util.Log.e(
+                "SportAuth",
+                "Failed to restore saved session",
+                e
+            )
             isAuthenticated = false
         } finally {
             isCheckingSession = false
@@ -70,11 +87,11 @@ fun SportOrganizerApp() {
 
     when {
         isCheckingSession -> {
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
+                contentAlignment = Alignment.Center
             ) {
-                androidx.compose.material3.CircularProgressIndicator()
+                CircularProgressIndicator()
             }
         }
 
@@ -82,13 +99,15 @@ fun SportOrganizerApp() {
             AuthScreen(
                 onAuthenticated = {
                     isAuthenticated = true
-                }
+                },
+                authViewModel = authViewModel
             )
         }
 
         else -> {
             SportOrganizerMainApp(
                 onSignOut = {
+                    authViewModel.resetAuthenticationState()
                     isAuthenticated = false
                 }
             )
@@ -105,6 +124,7 @@ private fun SportOrganizerMainApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val scope = rememberCoroutineScope()
+    var isSigningOut by remember { mutableStateOf(false) }
 
     val screens = listOf(
         Screen.Dashboard,
@@ -165,6 +185,9 @@ private fun SportOrganizerMainApp(
                                     Screen.Matches -> "M"
                                     Screen.Tournaments -> "C"
                                     Screen.Profile -> "P"
+                                    Screen.CollegeOnboarding -> ""
+                                    Screen.CollegeAdminRequests -> ""
+                                    Screen.PlatformAdmin -> ""
                                 },
                                 fontWeight = FontWeight.Bold
                             )
@@ -177,6 +200,9 @@ private fun SportOrganizerMainApp(
                                     Screen.Matches -> "Matches"
                                     Screen.Tournaments -> "Events"
                                     Screen.Profile -> "Profile"
+                                    Screen.CollegeOnboarding -> "Join College"
+                                    Screen.CollegeAdminRequests -> "Admin Requests"
+                                    Screen.PlatformAdmin -> "Super Admin"
                                 }
                             )
                         },
@@ -191,23 +217,37 @@ private fun SportOrganizerMainApp(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            SportOrganizerNavHost(
-                navController = navController,
-                onSignOut = {
-                    scope.launch {
-                        try {
-                            AuthRepository.signOut()
-                            onSignOut()
-                        } catch (e: Exception) {
-                            android.util.Log.e(
-                                "SportAuth",
-                                "Sign out failed",
-                                e
-                            )
+            if (isSigningOut) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            } else {
+                SportOrganizerNavHost(
+                    navController = navController,
+                    onSignOut = {
+                        if (!isSigningOut) {
+                            scope.launch {
+                                isSigningOut = true
+
+                                try {
+                                    AuthRepository.signOut()
+
+                                    // Change the app to the login screen only
+                                    // after Supabase sign-out succeeds.
+                                    onSignOut()
+                                } catch (e: Exception) {
+                                    Log.e(
+                                        "SportAuth",
+                                        "Sign out failed",
+                                        e
+                                    )
+                                    isSigningOut = false
+                                }
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     }
 }

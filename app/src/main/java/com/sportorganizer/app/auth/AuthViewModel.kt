@@ -15,13 +15,32 @@ import kotlinx.coroutines.launch
 data class AuthUiState(
     val isLoading: Boolean = false,
     val message: String? = null,
-    val isAuthenticated: Boolean = false
+    val isAuthenticated: Boolean = false,
+    val isSignUpComplete: Boolean = false
 )
 
 class AuthViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
+
+
+    fun resetAuthenticationState() {
+        _uiState.value = AuthUiState(
+            isAuthenticated = false,
+            isLoading = false,
+            message = null,
+            isSignUpComplete = false
+        )
+    }
+
+    fun resetSignUpComplete() {
+        _uiState.value = _uiState.value.copy(
+            isSignUpComplete = false,
+            message = null
+        )
+    }
 
     fun checkExistingSession() {
         // Reset the old state immediately, before launching the coroutine.
@@ -129,7 +148,7 @@ class AuthViewModel : ViewModel() {
                     )
                 } else {
                     AuthUiState(
-                        message = "Account created. Please check your email to verify your account, then sign in."
+                        isSignUpComplete = true
                     )
                 }
 

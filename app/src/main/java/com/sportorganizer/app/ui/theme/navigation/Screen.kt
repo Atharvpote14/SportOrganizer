@@ -4,6 +4,11 @@ sealed class Screen(
     val route: String,
     val title: String
 ) {
+    data object CollegeAdminRequests :
+        Screen("college_admin_requests", "Admin Requests")
+    data object PlatformAdmin : Screen("platform_admin", "Super Admin")
+    data object CollegeOnboarding :
+        Screen("college_onboarding", "Join College")
     data object Dashboard : Screen(
         route = "dashboard",
         title = "Dashboard"
