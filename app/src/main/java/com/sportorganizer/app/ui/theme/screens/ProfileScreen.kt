@@ -2,6 +2,7 @@
 package com.sportorganizer.app.ui.theme.screens
 
 import com.sportorganizer.app.profile.RolePermissions
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +33,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sportorganizer.app.profile.ProfileViewModel
 import com.sportorganizer.app.data.remote.repository.PlatformAdminRepository
@@ -61,28 +67,34 @@ fun ProfileScreen(
 
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 18.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        TextButton(
-            onClick = onOpenCollegeOnboarding
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
-            Text("Find or Join a College")
-        }
-        if (isPlatformAdmin) {
-            TextButton(onClick = onOpenPlatformAdmin) {
-                Text("Platform Super Admin Dashboard")
-            }
-        }
-        if (state.memberships.any { membership ->
-                com.sportorganizer.app.profile.UserRole
-                    .fromDatabase(membership.role) ==
-                        com.sportorganizer.app.profile.UserRole.COLLEGE_ADMIN
-            }) {
-            TextButton(
-                onClick = onOpenAdminRequests
-            ) {
-                Text("Admin Requests")
+            Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("YOUR ACCOUNT", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, letterSpacing = 1.5.sp)
+                Text("Profile & access", style = MaterialTheme.typography.headlineSmall)
+                Text("Manage your sports identity and the spaces you belong to.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Button(onClick = onOpenCollegeOnboarding, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+                    Text("Find or Join a College")
+                }
+                if (isPlatformAdmin) {
+                    Button(onClick = onOpenPlatformAdmin, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+                        Text("Platform Super Admin Dashboard")
+                    }
+                }
+                if (state.memberships.any { membership ->
+                        com.sportorganizer.app.profile.UserRole.fromDatabase(membership.role) == com.sportorganizer.app.profile.UserRole.COLLEGE_ADMIN
+                    }) {
+                    Button(onClick = onOpenAdminRequests, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+                        Text("Admin Requests")
+                    }
+                }
             }
         }
         Row(

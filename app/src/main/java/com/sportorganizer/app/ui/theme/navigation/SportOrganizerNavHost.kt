@@ -37,7 +37,7 @@ fun SportOrganizerNavHost(
         }
 
         composable(Screen.Dashboard.route) {
-            SportOrganizerHome()
+            SportOrganizerHome(onOpenProfile = { navController.navigate(Screen.Profile.route) })
         }
 
         composable(Screen.Teams.route) {

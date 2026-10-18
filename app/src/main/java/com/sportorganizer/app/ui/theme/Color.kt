@@ -1,38 +1,33 @@
-
 package com.sportorganizer.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Brand colors
-val SportNavy = Color(0xFF101828)
-val SportNavyLight = Color(0xFF1D2939)
-val SportBlue = Color(0xFF2563EB)
-val SportBlueLight = Color(0xFF60A5FA)
-val SportCyan = Color(0xFF06B6D4)
+// Sport Organizer — crisp indigo + electric-lime brand palette
+val SportNavy = Color(0xFF10152B)
+val SportNavyLight = Color(0xFF202846)
+val SportBlue = Color(0xFF4F46E5)
+val SportBlueLight = Color(0xFFA5B4FC)
+val SportCyan = Color(0xFF22D3EE)
+val SportAccentLime = Color(0xFFD9F99D)
 
-// Light theme surfaces
-val SportBackgroundLight = Color(0xFFF7F9FC)
+val SportBackgroundLight = Color(0xFFF6F7FB)
 val SportSurfaceLight = Color(0xFFFFFFFF)
-val SportSurfaceVariantLight = Color(0xFFEEF2F7)
-val SportTextLight = Color(0xFF101828)
-val SportTextSecondaryLight = Color(0xFF667085)
-val SportOutlineLight = Color(0xFFD0D5DD)
+val SportSurfaceVariantLight = Color(0xFFEEF0F8)
+val SportTextLight = Color(0xFF171B2E)
+val SportTextSecondaryLight = Color(0xFF697086)
+val SportOutlineLight = Color(0xFFE0E3ED)
 
-// Dark theme surfaces
-val SportBackgroundDark = Color(0xFF0B1220)
-val SportSurfaceDark = Color(0xFF111C2E)
-val SportSurfaceVariantDark = Color(0xFF1D2939)
-val SportTextDark = Color(0xFFF2F4F7)
-val SportTextSecondaryDark = Color(0xFF98A2B3)
-val SportOutlineDark = Color(0xFF344054)
+val SportBackgroundDark = Color(0xFF0B1020)
+val SportSurfaceDark = Color(0xFF141B2F)
+val SportSurfaceVariantDark = Color(0xFF202943)
+val SportTextDark = Color(0xFFF5F6FC)
+val SportTextSecondaryDark = Color(0xFFA6AEC4)
+val SportOutlineDark = Color(0xFF303A55)
 
-// Semantic colors
-val SportSuccess = Color(0xFF16A34A)
-val SportWarning = Color(0xFFF59E0B)
-val SportError = Color(0xFFDC2626)
+val SportSuccess = Color(0xFF16A36A)
+val SportWarning = Color(0xFFF4B740)
+val SportError = Color(0xFFE5484D)
 val SportInfo = Color(0xFF0284C7)
-
-// Text and icon colors for semantic backgrounds
 val SportOnSuccess = Color(0xFFFFFFFF)
 val SportOnWarning = Color(0xFF101828)
 val SportOnError = Color(0xFFFFFFFF)
